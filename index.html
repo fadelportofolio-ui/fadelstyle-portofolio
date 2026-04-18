@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fadel Style | Premium Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-[#fcfcfc] text-slate-900 flex flex-col min-h-screen">
+
+    <nav class="glass-nav sticky top-0 z-50 border-b border-gray-100">
+        <div class="container mx-auto px-4 md:px-10 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-8">
+                <h1 class="text-2xl font-black tracking-tighter text-indigo-600">FADEL<span class="text-black italic">STYLE</span></h1>
+                <div class="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-500">
+                    <button onclick="filterProducts('Semua')" class="hover:text-indigo-600 transition nav-link text-indigo-600">Semua</button>
+                    <button onclick="filterProducts('Sepatu')" class="hover:text-indigo-600 transition nav-link">Sepatu</button>
+                    <button onclick="filterProducts('Jaket')" class="hover:text-indigo-600 transition nav-link">Jaket</button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button onclick="toggleCart()" class="relative p-2 hover:bg-gray-100 rounded-full transition">
+                    <i class="fa-solid fa-cart-shopping text-xl text-slate-700"></i>
+                    <span id="cart-count" class="absolute top-0 right-0 bg-indigo-600 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold hidden">0</span>
+                </button>
+            </div>
+        </div>
+        <div class="md:hidden flex justify-center gap-8 py-3 border-t border-gray-50 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+            <button onclick="filterProducts('Semua')" class="hover:text-indigo-600">Semua</button>
+            <button onclick="filterProducts('Sepatu')" class="hover:text-indigo-600">Sepatu</button>
+            <button onclick="filterProducts('Jaket')" class="hover:text-indigo-600">Jaket</button>
+        </div>
+    </nav>
+
+    <div class="flex-grow">
+        <header class="container mx-auto px-6 pt-12 pb-6 text-center md:text-left">
+            <h2 class="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-4">
+                Exclusive <span class="text-indigo-600">Style.</span>
+            </h2>
+            <p class="text-gray-500 max-w-lg">Koleksi premium untuk tampilan profesional dan gaya hidup urban Anda.</p>
+        </header>
+
+        <main class="container mx-auto px-4 md:px-10 py-10">
+            <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                </div>
+        </main>
+    </div>
+
+    <footer class="bg-white border-t border-gray-100 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-lg font-black tracking-tighter text-indigo-600 mb-2">FADEL<span class="text-black italic">STYLE</span></h3>
+            <p class="text-gray-400 text-sm font-medium">Copyright &copy; 2026 <span class="text-slate-900 font-bold italic">Fadel Muhammad</span>. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] hidden opacity-0 transition-all duration-500"></div>
+    <div id="cart-drawer" class="fixed right-0 top-0 h-full w-full max-w-md bg-white z-[70] shadow-2xl transform translate-x-full transition-transform duration-500 flex flex-col">
+        <div class="p-8 border-b flex justify-between items-center">
+            <h3 class="text-2xl font-extrabold tracking-tight uppercase">Keranjang</h3>
+            <button onclick="toggleCart()" class="text-3xl font-light hover:rotate-90 transition-transform">&times;</button>
+        </div>
+        
+        <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-6">
+            </div>
+
+        <div class="p-8 bg-gray-50 border-t">
+            <div class="flex justify-between items-end mb-8">
+                <span class="text-gray-500 font-medium text-sm italic">Subtotal</span>
+                <span id="cart-total" class="text-3xl font-black text-indigo-600">Rp 0</span>
+            </div>
+            <button onclick="alert('Checkout Berhasil!')" class="w-full bg-black text-white py-5 rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-xl active:scale-95">
+                CHECKOUT
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DATA PRODUK
+        const products = [
+            { id: 1, name: "Luxury Runner X1", price: 2850000, category: "Sepatu", img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80" },
+            { id: 2, name: "Urban Tech Bomber", price: 1450000, category: "Jaket", img: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80" },
+            { id: 3, name: "Court Vision Classic", price: 1100000, category: "Sepatu", img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80" },
+            { id: 4, name: "Suede Harrington", price: 1850000, category: "Jaket", img: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80" },
+            { id: 5, name: "Retro Jogger Elite", price: 1550000, category: "Sepatu", img: "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=600&q=80" },
+            { id: 6, name: "Sherpa Denim Jacket", price: 980000, category: "Jaket", img: "https://images.unsplash.com/photo-1617114919297-3c8ddb01f599?w=600&q=80" },
+            { id: 7, name: "Flyknit Performance", price: 2150000, category: "Sepatu", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" },
+            { id: 8, name: "Polar Puffer Coat", price: 2350000, category: "Jaket", img: "https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?w=600&q=80" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('FadelStyle_Cart')) || [];
+
+        function renderProducts(category = 'Semua') {
+            const container = document.getElementById('product-list');
+            container.innerHTML = "";
+
+            const filtered = products.filter(p => category === 'Semua' || p.category === category);
+
+            filtered.forEach(p => {
+                container.innerHTML += `
+                    <div class="product-card group bg-white rounded-[2.5rem] p-4 border border-gray-100 shadow-sm">
+                        <div class="relative overflow-hidden rounded-[2rem] bg-gray-100 aspect-[4/5] mb-6">
+                            <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            <button onclick="addToCart(${p.id})" class="absolute bottom-4 right-4 bg-white text-black w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all hover:bg-indigo-600 hover:text-white">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="px-2 pb-2 text-center md:text-left">
+                            <span class="text-[10px] font-extrabold uppercase tracking-[0.2em] text-indigo-500">${p.category}</span>
+                            <h3 class="text-lg font-bold text-slate-800 mt-1">${p.name}</h3>
+                            <p class="text-slate-400 font-semibold mt-1 italic">Rp ${p.price.toLocaleString('id-ID')}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterProducts(cat) {
+            renderProducts(cat);
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('text-indigo-600', link.innerText === cat);
+            });
+        }
+
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            const overlay = document.getElementById('cart-overlay');
+            const isOpen = drawer.classList.contains('translate-x-0');
+
+            if (isOpen) {
+                drawer.classList.replace('translate-x-0', 'translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.replace('opacity-100', 'opacity-0');
+            } else {
+                drawer.classList.replace('translate-x-full', 'translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.replace('opacity-0', 'opacity-100'), 10);
+            }
+        }
+
+        function addToCart(id) {
+            const item = products.find(p => p.id === id);
+            const inCart = cart.find(c => c.id === id);
+            if (inCart) inCart.qty++;
+            else cart.push({ ...item, qty: 1 });
+            
+            saveCart();
+            updateCartUI();
+            if(!document.getElementById('cart-drawer').classList.contains('translate-x-0')) toggleCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('FadelStyle_Cart', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const countBadge = document.getElementById('cart-count');
+
+            let total = 0;
+            let count = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="h-full flex flex-col items-center justify-center text-gray-300 py-20">
+                    <i class="fa-solid fa-bag-shopping text-6xl mb-4"></i>
+                    <p class="font-medium">Kosong</p>
+                </div>`;
+            } else {
+                container.innerHTML = cart.map(item => {
+                    total += item.price * item.qty;
+                    count += item.qty;
+                    return `
+                        <div class="flex items-center gap-6">
+                            <div class="w-20 h-24 bg-gray-100 rounded-2xl overflow-hidden flex-shrink-0">
+                                <img src="${item.img}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-extrabold text-sm text-slate-800">${item.name}</h4>
+                                <p class="text-xs text-slate-400 font-bold mt-1 uppercase tracking-tighter">${item.qty} UNIT &bull; Rp ${item.price.toLocaleString('id-ID')}</p>
+                                <div class="flex gap-4 mt-3">
+                                    <button onclick="changeQty(${item.id}, -1)" class="text-gray-400 hover:text-black"><i class="fa-solid fa-minus text-[10px]"></i></button>
+                                    <button onclick="changeQty(${item.id}, 1)" class="text-gray-400 hover:text-black"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                                    <button onclick="removeItem(${item.id})" class="ml-auto text-red-300 hover:text-red-600"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            totalEl.innerText = `Rp ${total.toLocaleString('id-ID')}`;
+            countBadge.innerText = count;
+            countBadge.classList.toggle('hidden', count === 0);
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            item.qty += delta;
+            if (item.qty < 1) removeItem(id);
+            else saveCart(), updateCartUI();
+        }
+
+        function removeItem(id) {
+            cart = cart.filter(c => c.id !== id);
+            saveCart();
+            updateCartUI();
+        }
+
+        renderProducts();
+        updateCartUI();
+    </script>
+</body>
+</html>
